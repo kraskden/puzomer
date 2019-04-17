@@ -108,10 +108,7 @@ function renderData(data) {
   }
   $overlay.append(w(cry_scores_verbal));
 
-  var total_time = 0;
-  for (var i = 0; i < data.turretsPlayed.length; i++) {
-    total_time += data.turretsPlayed[i].timePlayed;
-  }
+  var total_time = data.turretsPlayed.reduce((acc, turr) => acc + turr.timePlayed, 0);
 
   let turret_verbal_pro = new Map([
     ["Огнемёт", "Пироманьяк"],
@@ -156,6 +153,8 @@ function renderData(data) {
   var topHull = null;
   
   if (total_time > 0) {
+    $overlay.append(w('<hr>'));
+
     $overlay.append(w('Игровое время на пушках:'));
     for (let turret of data.turretsPlayed) {
       if (turret.timePlayed > 0) {
@@ -171,6 +170,8 @@ function renderData(data) {
         }
       }
     }
+
+    $overlay.append(w('<hr>'));
 
     $overlay.append(w('Игровое время на корпусах:'));
     for (let hull of data.hullsPlayed) {
@@ -191,6 +192,8 @@ function renderData(data) {
       }
     }
   }
+
+  $overlay.append(w('<hr>'));
 
   if (lightHullsTimePlayed > mediumHullsTimePlayed && lightHullsTimePlayed > heavyHullsTimePlayed) {
     hullTitle = 'Летящий';
@@ -268,10 +271,6 @@ function renderData(data) {
     }
     $overlay.append(w(time_golds_verbal));
   }
-  
-  $overlay.append(w('Всего кристаллов: ' + formatThousands(data.earnedCrystals)));
-  $overlay.append(w('Всего голдов: ' + formatThousands(data.caughtGolds)));
-  $overlay.append(w('Игровое время, час.: ' + formatThousands((total_time / 3600000).toFixed(1) * 1)));
   
 
   /*
