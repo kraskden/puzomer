@@ -162,6 +162,12 @@ function renderData(data) {
   var lightHulls = ["Васп", "Хорнет"];
   var mediumHulls = ["Викинг", "Хантер", "Диктатор"];
   var heavyHulls = ["Титан", "Мамонт"];
+
+  var lightHullsTimePlayed = 0;
+  var mediumHullsTimePlayed = 0;
+  var heavyHullsTimePlayed = 0;
+  var topHullTimePlayed = 0;
+  var topHull = null;
   
   if (total_time > 0) {
     $overlay.append(w('Игровое время на пушках:'));
@@ -179,13 +185,36 @@ function renderData(data) {
         }
       }
     }
+
+    $overlay.append(w('Игровое время на корпусах:'));
+    for (let hull of data.hullsPlayed) {
+      if (hull.timePlayed > 0) {
+        $overlay.append(w(hull.name + ': ' + ((hull.timePlayed / total_time) * 100).toFixed(1) + '%'));
+        if (topHullTimePlayed < hull.timePlayed) {
+          topHullTimePlayed = hull.timePlayed;
+          topHull = hull.name;
+        }
+
+        if (lightHulls.indexOf(hull.name) != -1) {
+          lightHullsTimePlayed += hull.timePlayed;
+        } else if (mediumHulls.indexOf(hull.name) != -1) {
+          mediumHullsTimePlayed += hull.timePlayed;
+        } else if (heavyHulls.indexOf(hull.name) != -1) {
+          heavyHullsTimePlayed += hull.timePlayed;
+        }
+      }
+    }
   }
 
-  var lightHullsTimePlayed = 0;
-  var mediumHullsTimePlayed = 0;
-  var heavyHullsTimePlayed = 0;
-  var topHullTimePlayed = 0;
-  var topHull = null;
+  if (lightHullsTimePlayed > mediumHullsTimePlayed && lightHullsTimePlayed > heavyHullsTimePlayed) {
+    hullTitle = 'Летящий';
+  } else if (mediumHullsTimePlayed > lightHullsTimePlayed && mediumHullsTimePlayed > heavyHullsTimePlayed) {
+    hullTitle = 'Спешащий';
+  } else if (heavyHullsTimePlayed > lightHullsTimePlayed && heavyHullsTimePlayed > mediumHullsTimePlayed) {
+    hullTitle = 'Ползущий';
+  }
+
+
   /*
   var tankiItemsMap = flipArray(retrieveWindowVariables(["tankiItems"]).tankiItems);
   
