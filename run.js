@@ -15,20 +15,6 @@ function getWindowVars() {
       });
 }
 
-function flipArray(trans) {
-  var key, tmp_ar = {};
-  for (key in trans) {
-    if (trans.hasOwnProperty(key)) {
-      tmp_ar[trans[key]] = key;
-    }
-  }
-  return tmp_ar;
-}
-
-function getItems() {  
-  return flipArray(tankiItems);
-}
-
 var windowVars = null;
 var $overlay = $('<div id="js-overlay_wrapper" class="overlay_wrapper" style="display:none;"></div>').prependTo('body');
 
@@ -214,40 +200,6 @@ function renderData(data) {
     hullTitle = 'Ползущий';
   }
 
-
-  /*
-  var tankiItemsMap = flipArray(retrieveWindowVariables(["tankiItems"]).tankiItems);
-  
-  if (total_time > 0) {
-    $overlay.append(w('Игровое время на корпусах:'));
-    for (var i = 0; i < data.hullsPlayed.length; i++) {
-      var hull = data.hullsPlayed[i];
-      if (hull.timePlayed > 0) {
-        $overlay.append(w(hull.name + ': ' + ((hull.timePlayed / total_time) * 100).toFixed(1) + '%'));
-        if (topHullTimePlayed < hull.timePlayed) {
-          topHullTimePlayed = hull.timePlayed;
-          topHull = tankiItemsMap[hull.id].split('_')[0];
-        }
-        
-        if (lightHulls.indexOf(tankiItemsMap[hull.id].split('_')[0]) != -1) {
-          lightHullsTimePlayed += hull.timePlayed;
-        } else if (mediumHulls.indexOf(tankiItemsMap[hull.id].split('_')[0]) != -1) {
-          mediumHullsTimePlayed += hull.timePlayed;
-        } else if (heavyHulls.indexOf(tankiItemsMap[hull.id].split('_')[0]) != -1) {
-          heavyHullsTimePlayed += hull.timePlayed;
-        }
-      }
-    }
-  }
-  
-  if (lightHullsTimePlayed > mediumHullsTimePlayed && lightHullsTimePlayed > heavyHullsTimePlayed) {
-    hullTitle = 'Летящий';
-  } else if (mediumHullsTimePlayed > lightHullsTimePlayed && mediumHullsTimePlayed > heavyHullsTimePlayed) {
-    hullTitle = 'Спешащий';
-  } else if (heavyHullsTimePlayed > lightHullsTimePlayed && heavyHullsTimePlayed > mediumHullsTimePlayed) {
-    hullTitle = 'Ползущий';
-  }
-  
   var topModePlayed = null;
   var modeMostPlayedTime = 0;
   var modesPlayed = [];
@@ -258,27 +210,22 @@ function renderData(data) {
       modeMostPlayedTime = data.modesPlayed[i].timePlayed;
     }    
   }
-  
-    
+
   //var topModePlayed = modesPlayed.indexOf(Math.max.apply(Math, modesPlayed));  
-  switch (topModePlayed) {
-    case "CP":
-      modeTitle = 'На Точку';
-      break;
-    case "DM":
-      modeTitle = 'За Фрагом';
-      break;
-    case "CTF":
-      modeTitle = 'За Флагом';
-      break;
-    case "TDM":
-      modeTitle = 'От Смерти';
-    default:
-      modeTitle = "Куда-то"
-      break;
-  }
-  
-  
+
+  let modes_verbal = new Map([
+    ["CP", "На Точку"],
+    ["DM", "За Фрагом"],
+    ["CTF", "За Флагом"],
+    ["TDM", "От Смерти"],
+    ["AS", "К Победе"], // Не, ну а куда может спешить ASL'шник???
+    ["RUGBY", "За Мячом"],
+    ["JGR", "За боссом"]
+  ]);
+
+  modeTitle = modes_verbal.has(topModePlayed) ? modes_verbal.get(topModePlayed) : "Куда-то";
+
+  /*
   var dd = 0;
   for (var i = 0; i < data.suppliesUsage.length; i++) {
     if (data.suppliesUsage[i].id == 10007271) { //DD id
@@ -358,7 +305,7 @@ function renderData(data) {
 
 
   $username = $("h1[class='user_name']");
-    */  
+    */ 
   //Уникалочки
   //Для ХРельщиков
   if (topHull == "hornet" && topHullTimePlayed / total_time > 0.5 && topTurret == "Рельса") {
@@ -369,7 +316,7 @@ function renderData(data) {
   var prefix = kdTitle + ' ' + turretTitle;
   var postfix = hullTitle + ' ' + modeTitle; 
 
-  console.log(turretTitle + " " + hullTitle);
+  console.log(turretTitle + " " + hullTitle + " " + modeTitle);
   
   
   prefix = '<span style="color: #dddddd">' + prefix + '</span>' + ' ';
