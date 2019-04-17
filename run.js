@@ -203,11 +203,11 @@ function renderData(data) {
   var topModePlayed = null;
   var modeMostPlayedTime = 0;
   var modesPlayed = [];
-  for (var i = 0; i < data.modesPlayed.length; i++) {
-    modesPlayed[data.modesPlayed[i].type] = data.modesPlayed[i].timePlayed;
-    if (modeMostPlayedTime < data.modesPlayed[i].timePlayed) {
-      topModePlayed = data.modesPlayed[i].type;
-      modeMostPlayedTime = data.modesPlayed[i].timePlayed;
+  for (let mode of data.modesPlayed) {
+    modesPlayed[mode.type] = mode.timePlayed;
+    if (modeMostPlayedTime < mode.timePlayed) {
+      topModePlayed = mode.type;
+      modeMostPlayedTime = mode.timePlayed;
     }    
   }
 
@@ -225,31 +225,27 @@ function renderData(data) {
 
   modeTitle = modes_verbal.has(topModePlayed) ? modes_verbal.get(topModePlayed) : "Куда-то";
 
-  /*
   var dd = 0;
-  for (var i = 0; i < data.suppliesUsage.length; i++) {
-    if (data.suppliesUsage[i].id == 10007271) { //DD id
-      dd = data.suppliesUsage[i].usages;
-    }
-  }
+  dd = data.suppliesUsage.filter((suppl) => suppl.id == 10007271)[0].usages; // DD ID
+
   if (dd > 0) {
     var dd_per_hour = (dd / (total_time / 3600000)).toFixed(1) * 1; //3600000 ms = 1 hour
     var dd_per_hour_verbal = 'ДД в час: ' + dd_per_hour + ' ';
     if (dd_per_hour < 5) {
       dd_per_hour_verbal += '[ББП-шник]';
-	  postfix += 'Без Припасов';
+	    postfix += 'Без Припасов';
     } else if (dd_per_hour >= 5 && dd_per_hour < 10) {
       dd_per_hour_verbal += '[скупердяй]';
-	  postfix += 'Без Припасов';
+	    postfix += 'Без Припасов';
     } else if (dd_per_hour >= 10 && dd_per_hour < 20) {
       dd_per_hour_verbal += '[ответственный]';
-	  postfix += 'Ответственный';
+	    postfix += 'Ответственный';
     } else if (dd_per_hour >= 20 && dd_per_hour < 40) {
       dd_per_hour_verbal += '[наркобоец]';
-	  postfix += 'Наркозависимый';
+	    postfix += 'Наркозависимый';
     } else {
       dd_per_hour_verbal += '[мизантроп]';
-	  postfix += 'Ненавидимый Врагами';
+	    postfix += 'Ненавидимый Врагами';
     }
     $overlay.append(w(dd_per_hour_verbal));
   }
@@ -260,21 +256,15 @@ function renderData(data) {
     var time_golds_verbal = 'Голд за время, час.: ' + time_golds + ' ';
     if (time_golds < 2) {
       time_golds_verbal += '[матёрый]';
-      //postfix += 'Голдбил';
       modeTitle = 'За Голдом';
     } else if (time_golds >= 2 && time_golds < 5) {
       time_golds_verbal += '[голдолов]';
-      //postfix += 'Голдолюб';
-      //modeTitle = 'За Голдом';
     } else if (time_golds >= 5 && time_golds < 10) {
       time_golds_verbal += '[везунчик]';
-      //postfix += 'Везунчик';
     } else if (time_golds >= 10 && time_golds < 20) {
       time_golds_verbal += '[равнодушный]';
-      //postfix += 'Равнодушный';
     } else {
       time_golds_verbal += '[презирающий]';
-      //postfix += 'Презирающий';
     }
     $overlay.append(w(time_golds_verbal));
   }
@@ -284,6 +274,7 @@ function renderData(data) {
   $overlay.append(w('Игровое время, час.: ' + formatThousands((total_time / 3600000).toFixed(1) * 1)));
   
 
+  /*
   //"Рейтинг Евы"
   var supplyUsage = 0;
   for (var i = 0; i < data.suppliesUsage.length; i++) {
@@ -316,8 +307,8 @@ function renderData(data) {
   var prefix = kdTitle + ' ' + turretTitle;
   var postfix = hullTitle + ' ' + modeTitle; 
 
+  console.log(prefix + " " + postfix);
   console.log(turretTitle + " " + hullTitle + " " + modeTitle);
-  
   
   prefix = '<span style="color: #dddddd">' + prefix + '</span>' + ' ';
   postfix = ' <span style="color: #dddddd">' + postfix + '</span>';
