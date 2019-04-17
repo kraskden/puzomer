@@ -1,47 +1,16 @@
-function retrieveWindowVariables(variables) {
-  var ret = {};
-
-  var scriptContent = "";
-  for (var i = 0; i < variables.length; i++) {
-    var currVariable = variables[i];
-    scriptContent += "if (typeof " + currVariable + " !== 'undefined') $('body').attr('tmp_" + currVariable + "', JSON.stringify(" + currVariable + "));\n"
-  }
-
-  var script = document.createElement('script');
-  script.id = 'tmpScript';
-  script.appendChild(document.createTextNode(scriptContent));
-  (document.body || document.head || document.documentElement).appendChild(script);
-
-  for (var i = 0; i < variables.length; i++) {
-    var currVariable = variables[i];
-    ret[currVariable] = $.parseJSON($("body").attr("tmp_" + currVariable));
-    $("body").removeAttr("tmp_" + currVariable);
-  }
-
-  $("#tmpScript").remove();
-
-  return ret;
-}
-
 function formatThousands(x) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 }
 
 function getWindowVars() {
-    console.log("Entrance");
-  //windowVars = retrieveWindowVariables(["tankiRating"]);
-  //if (windowVars != null) {
- //   renderData(windowVars.tankiRating.user.data);
- //   clearInterval(intervalId);
- // } else {
       var api = 'https://ratings.tankionline.com/api/eu/profile/?user=fizzika&lang=ru';
       $.get(api, function(data) {
-          
-         // clearInterval(intervalId);
-          console.log("Logger");
           console.log(data);
+          if (data.responseType == "OK") {
+              renderData(data.response);
+              clearInterval(intervalId);
+          }
       });
-  //}
 }
 
 function flipArray(trans) {
@@ -266,7 +235,7 @@ function renderData(data) {
   var heavyHullsTimePlayed = 0;
   var topHullTimePlayed = 0;
   var topHull = null;
-  
+  /*
   var tankiItemsMap = flipArray(retrieveWindowVariables(["tankiItems"]).tankiItems);
   
   if (total_time > 0) {
@@ -406,6 +375,7 @@ function renderData(data) {
   var evaScore = '<tr><td data-loc="text_pos_dmt" class="first-column">Рейтинг <a href="http://ru.tankiforum.com/profile/625-eva/">Евы</a></td><td id="dmt_pos">—</td><td id="dmt_value">' + evaScoreValue + '</td><td id="dmt_prev">—</td></tr>';
   $(".ratings_table tr:last").after(evaScore);
   
+  */
   $username = $("h1[class='user_name']");
   
   //Уникалочки
