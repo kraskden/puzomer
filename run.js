@@ -1,9 +1,11 @@
+'use strict'
+
 function formatThousands(x) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 }
 
 function getWindowVars() {
-      var api = 'https://ratings.tankionline.com/api/eu/profile/?user=fizzika&lang=ru';
+      var api = 'https://ratings.tankionline.com/api/eu/profile/?user=serene&lang=ru';
       $.get(api, function(data) {
           console.log(data);
           if (data.responseType == "OK") {
@@ -125,111 +127,60 @@ function renderData(data) {
     total_time += data.turretsPlayed[i].timePlayed;
   }
 
+  let turret_verbal_pro = new Map([
+    ["Огнемёт", "Пироманьяк"],
+    ["Молот", "Кузнец"],
+    ["Фриз", "Дед Мороз"],
+    ["Изида", "Доктор"],
+    ["Твинс", "Дискотека"],
+    ["Рикошет", "Апельсин"],
+    ["Гром", "Громовержец"],
+    ["Вулкан", "Катаклизм"],
+    ["Смоки", "Дятел"],
+    ["Шафт", "Циклоп"],
+    ["Рельса", "Лучемёт"],
+    ["Страйкер", "Подрывник"],
+    ["Магнум", "Терминатор"], // Лучемёт в оригинальном коде был) Копипаст - зло
+  ]);
+
+  let turret_verbal_noob = new Map([
+    ["Огнемёт", "Жиговод"],
+    ["Молот", "Молотобоец"],
+    ["Фриз", "Фризовод"],
+    ["Изида", "Изидер"],
+    ["Твинс", "Твинсовод"],
+    ["Рикошет", "Рикошетчик"],
+    ["Гром", "Громовод"],
+    ["Вулкан", "Вулканолог"],
+    ["Смоки", "Смоковод"],
+    ["Шафт", "Шафтовод"],
+    ["Рельса", "Рельсовод"],
+    ["Страйкер", "Ракетомёт"],
+    ["Магнум", "Смерть-С-Небес"], 
+  ]);
+
+  var lightHulls = ["Васп", "Хорнет"];
+  var mediumHulls = ["Викинг", "Хантер", "Диктатор"];
+  var heavyHulls = ["Титан", "Мамонт"];
   
   if (total_time > 0) {
     $overlay.append(w('Игровое время на пушках:'));
-    for (var i = 0; i < data.turretsPlayed.length; i++) {
-      var turret = data.turretsPlayed[i];
+    for (let turret of data.turretsPlayed) {
       if (turret.timePlayed > 0) {
         $overlay.append(w(turret.name + ': ' + ((turret.timePlayed / total_time) * 100).toFixed(1) + '%'));
-        
         if (turret.timePlayed / total_time > 0.8)
         {
           topTurret = turret.name;
-          switch (turret.name) {
-          case "Огнемёт":
-            turretTitle = "Пироманьяк";
-            break;
-          case "Молот":
-            turretTitle = "Кузнец";
-            break;
-          case "Фриз":
-            turretTitle = "Дед Мороз";
-            break;
-          case "Изида":
-            turretTitle = "Доктор";
-            break;
-          case "Твинс":
-            turretTitle = "Дискотека";
-            break;
-          case "Рикошет": 
-            turretTitle = "Апельсин";
-            break;
-          case "Гром":
-            turretTitle = "Громовержец";
-            break;
-          case "Вулкан":
-            turretTitle = "Катаклизм";
-            break; 
-          case "Смоки":
-            turretTitle = "Дятел";
-            break;
-          case "Шафт":
-            turretTitle = "Циклоп";
-            break;
-          case "Рельса":
-            turretTitle = "Лучемёт";
-            break;
-          case "Страйкер":
-            turretTitle = "Подрывник";
-            break; 
-          case "Магнум":
-            turretTitle = "Лучемёт";
-            break;           
-          }            
+          turretTitle = turret_verbal_pro.get(turret.name);
         } else if (turret.timePlayed / total_time > 0.5)
         {
           topTurret = turret.name;
-          switch (turret.name) {
-            case "Огнемёт":
-              turretTitle = "Жиговод";
-              break;
-            case "Молот":
-              turretTitle = "Молотобоец";
-              break;
-            case "Фриз":
-              turretTitle = "Фризовод";
-              break;
-            case "Изида":
-              turretTitle = "Изидер";
-              break;
-            case "Твинс":
-              turretTitle = "Твинсовод";
-              break;
-            case "Рикошет":
-              turretTitle = "Рикошетчик";
-              break;
-            case "Гром":
-              turretTitle = "Громовод";
-              break;
-            case "Вулкан":
-              turretTitle = "Вулканолог";
-              break; 
-            case "Смоки":
-              turretTitle = "Смоковод";
-              break;
-            case "Шафт":
-              turretTitle = "Шафтовод";
-              break;
-            case "Рельса":
-              turretTitle = "Рельсовод";
-              break;   
-            case "Страйкер":
-              turretTitle = "Ракетомет";
-              break; 
-            case "Магнум":
-              turretTitle = "Смерть-С-Небес";
-              break;              
-          }
+          turretTitle = turret_verbal_noob.get(turret.name);
         }
       }
     }
   }
 
-  var lightHulls = ["wasp", "hornet"];
-  var mediumHulls = ["viking", "hunter", "dictator"];
-  var heavyHulls = ["titan", "mammoth"];
-  
   var lightHullsTimePlayed = 0;
   var mediumHullsTimePlayed = 0;
   var heavyHullsTimePlayed = 0;
@@ -375,9 +326,10 @@ function renderData(data) {
   var evaScore = '<tr><td data-loc="text_pos_dmt" class="first-column">Рейтинг <a href="http://ru.tankiforum.com/profile/625-eva/">Евы</a></td><td id="dmt_pos">—</td><td id="dmt_value">' + evaScoreValue + '</td><td id="dmt_prev">—</td></tr>';
   $(".ratings_table tr:last").after(evaScore);
   
-  */
+
+
   $username = $("h1[class='user_name']");
-  
+    */  
   //Уникалочки
   //Для ХРельщиков
   if (topHull == "hornet" && topHullTimePlayed / total_time > 0.5 && topTurret == "Рельса") {
@@ -387,9 +339,11 @@ function renderData(data) {
   
   var prefix = kdTitle + ' ' + turretTitle;
   var postfix = hullTitle + ' ' + modeTitle; 
+
+  console.log(turretTitle + " " + hullTitle);
   
   
   prefix = '<span style="color: #dddddd">' + prefix + '</span>' + ' ';
   postfix = ' <span style="color: #dddddd">' + postfix + '</span>';
-  $username.prepend(prefix).append(postfix);
+  //$username.prepend(prefix).append(postfix);
 }
