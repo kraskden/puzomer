@@ -1,0 +1,17 @@
+.overlay_wrapper {
+  position: fixed;
+  z-index: 1000;
+  top: 7px;
+  right: 7px;
+  padding: 10px 10px 5px 10px;
+  color: #FFF;
+  border: 2px solid rgba(170, 170, 170, 0.75);
+  border-radius: 5px;
+  box-shadow: 0 7px 20px rgba(0, 0, 0, 0.75);
+  background: rgba(0, 0, 0, 0.8);
+  font-size: 14px;
+}
+.overlay_wrapper div {
+  margin-bottom: 5px;
+  white-space: nowrap;
+}
