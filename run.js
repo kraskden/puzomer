@@ -20,13 +20,8 @@ setInterval(makeWaitFun(), 200);
 
 function getWindowVars() {
       // TODO: use url parse instead of this shit
-      try {
-        var user = $("a[class='user-info-panel__link']")[0].innerText;
-        if (user.indexOf(" ") != -1)
-          return; 
-      } catch (err) {
-        return;
-      }
+      var re = /user\/(\w+)\/?/;
+      var user = re.exec(window.location.href)[1];
       var api = `https://ratings.tankionline.com/api/eu/profile/?user=${user}&lang=ru`
       $.get(api, function(data) {
           if (data.responseType == "OK") {
@@ -342,11 +337,9 @@ function renderData(data) {
   var postfix = hullTitle + ' ' + modeTitle; 
  
   var caption = $("a[class='user-info-panel__link']");
-  try {
-    var name = $("a[class='user-info-panel__link']")[0].innerText;
-  } catch (err) {
-    return;
-  }
+  var re = /user\/(\w+)\/?/;
+  var name = re.exec(window.location.href)[1];
+      
   let icon = caption.html().slice(0, -1*name.length);
   prefix = '<span style="color: #dddddd">' + prefix + '</span>' + ' ';
   postfix = ' <span style="color: #dddddd">' + postfix + '</span>';
