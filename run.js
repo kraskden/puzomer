@@ -4,7 +4,22 @@ function formatThousands(x) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 }
 
+function makeWaitFun()
+{
+  let currUrl = null;
+  return function() {
+    let url = window.location.href;
+    if (currUrl != url) {
+      getWindowVars();
+      currUrl = url;
+    }
+  }
+}
+
+setInterval(makeWaitFun(), 200);
+
 function getWindowVars() {
+      // TODO: use url parse instead of this shit
       try {
         var user = $("a[class='user-info-panel__link']")[0].innerText;
         if (user.indexOf(" ") != -1)
@@ -12,14 +27,7 @@ function getWindowVars() {
       } catch (err) {
         return;
       }
-      /*Dirty hack for remove time control. 
-      * Server always send lower-case nick in url pars, and our function send upper-case nickname. 
-      * In background.js event handler differentiate this and call getWindowVars() fun only after
-      * server responce
-      */ 
-      user = user.toUpperCase();
       var api = `https://ratings.tankionline.com/api/eu/profile/?user=${user}&lang=ru`
-      console.log(api);
       $.get(api, function(data) {
           if (data.responseType == "OK") {
               renderData(data.response);
@@ -39,11 +47,6 @@ $overlay.on('init', function () {
   } else {
     $overlay.show();
   }
-});
-
-$overlay.on('update', function() {
-  intervalId = setTimeout(getWindowVars, 200);
-  var timeoutId = setTimeout(function() { clearInterval(intervalId) }, 3000);
 });
 
 function w(row) {
@@ -348,6 +351,4 @@ function renderData(data) {
   prefix = '<span style="color: #dddddd">' + prefix + '</span>' + ' ';
   postfix = ' <span style="color: #dddddd">' + postfix + '</span>';
   caption.html(icon + prefix + name + postfix);
-  
-  //$username.prepend(prefix).append(postfix);
 }

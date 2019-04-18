@@ -12,11 +12,3 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 chrome.pageAction.onClicked.addListener(function (tab) {
   chrome.tabs.executeScript(null, {code: "$('#js-overlay_wrapper').trigger('init');"});
 });
-
-chrome.webRequest.onResponseStarted.addListener(function(details){
-  // See getWindowVars() in run.js
-  if (details.url.match(/ratings.tankionline.com\/api\/.*user=[a-z]+/)) {
-    chrome.tabs.executeScript(null, {code: "$('#js-overlay_wrapper').trigger('update');"});
-  }
-},
-{urls: ["https://ratings.tankionline.com/*"]},['responseHeaders']);
