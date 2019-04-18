@@ -4,8 +4,6 @@ function formatThousands(x) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 }
 
-// Need to replace this shit
-
 function getWindowVars() {
       try {
         var user = $("a[class='user-info-panel__link']")[0].innerText;
@@ -14,11 +12,18 @@ function getWindowVars() {
       } catch (err) {
         return;
       }
+      /*Dirty hack for remove time control. 
+      * Server always send lower-case nick in url pars, and our function send upper-case nickname. 
+      * In background.js event handler differentiate this and call getWindowVars() fun only after
+      * server responce
+      */ 
+      user = user.toUpperCase();
       var api = `https://ratings.tankionline.com/api/eu/profile/?user=${user}&lang=ru`
+      console.log(api);
       $.get(api, function(data) {
           if (data.responseType == "OK") {
               renderData(data.response);
-              //clearInterval(intervalId);
+              clearInterval(intervalId);
           }
       });
 }
@@ -26,8 +31,7 @@ function getWindowVars() {
 var windowVars = null;
 var $overlay = $('<div id="js-overlay_wrapper" class="overlay_wrapper" style="display:none;"></div>').prependTo('body');
 
-//var intervalId = setInterval(getWindowVars, 200);
-//var timeoutId = setTimeout(function() { clearInterval(intervalId) }, 3000 );
+var intervalId;
 
 $overlay.on('init', function () {
   if ($(this).is(':visible')) {
@@ -37,17 +41,9 @@ $overlay.on('init', function () {
   }
 });
 
-var updateTime = 0;
-
 $overlay.on('update', function() {
-    console.log("update");
-    let curr = Date.now();
-    if (curr - updateTime > 500) {
-      updateTime = curr;
-      getWindowVars();
-    } else {
-      console.log("Timeout");
-    }
+  intervalId = setTimeout(getWindowVars, 200);
+  var timeoutId = setTimeout(function() { clearInterval(intervalId) }, 3000);
 });
 
 function w(row) {
@@ -67,7 +63,6 @@ function addItemTime(map, item)
     map.set(item.name, item.timePlayed);
   } 
 }
-
 
 function renderData(data) {
   $overlay.html('');
