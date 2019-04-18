@@ -4,6 +4,8 @@ function formatThousands(x) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 }
 
+// Need to replace this shit
+
 function getWindowVars() {
       try {
         var user = $("a[class='user-info-panel__link']")[0].innerText;
@@ -38,10 +40,13 @@ $overlay.on('init', function () {
 var updateTime = 0;
 
 $overlay.on('update', function() {
+    console.log("update");
     let curr = Date.now();
-    if (curr - updateTime > 1500) {
+    if (curr - updateTime > 500) {
       updateTime = curr;
       getWindowVars();
+    } else {
+      console.log("Timeout");
     }
 });
 
@@ -52,6 +57,15 @@ function w(row) {
 function toHours(time)
 {
 	return Math.round (time / 1000 / 3600);
+}
+
+function addItemTime(map, item)
+{
+  if (map.has(item.name)) {
+    map.set(item.name, map.get(item.name) + item.timePlayed);
+  } else {
+    map.set(item.name, item.timePlayed);
+  } 
 }
 
 
@@ -168,35 +182,33 @@ function renderData(data) {
   var topHull = null;
   
   if (total_time > 0) {
-    $overlay.append(w('<hr>'));
-
-    $overlay.append(w('Игровое время на пушках:'));
+    let turrets_time = new Map();
     for (let turret of data.turretsPlayed) {
       if (turret.timePlayed > 0) {
-        $overlay.append(w(turret.name + ': ' + ((turret.timePlayed / total_time) * 100).toFixed(1) + '%'));
-        if (turret.timePlayed / total_time > 0.8)
-        {
-          topTurret = turret.name;
-          turretTitle = turret_verbal_pro.get(turret.name);
-        } else if (turret.timePlayed / total_time > 0.5)
-        {
-          topTurret = turret.name;
-          turretTitle = turret_verbal_noob.get(turret.name);
-        }
+        addItemTime(turrets_time, turret);
       }
     }
+    turrets_time = new Map([...turrets_time.entries()].sort((a, b) => b[1] - a[1])); // Sort by time
 
     $overlay.append(w('<hr>'));
+    $overlay.append(w('Игровое время на пушках:'));
+    for (let [name, time] of turrets_time) {
+      $overlay.append(w(name + ': ' + ((time / total_time) * 100).toFixed(1) + '%'));
+      if (time / total_time > 0.8)
+      {
+        topTurret = name;
+        turretTitle = turret_verbal_pro.get(name);
+      } else if (time / total_time > 0.5)
+      {
+        topTurret = name;
+        turretTitle = turret_verbal_noob.get(name);
+      } 
+    }
 
-    $overlay.append(w('Игровое время на корпусах:'));
+    let hulls_time = new Map();
     for (let hull of data.hullsPlayed) {
       if (hull.timePlayed > 0) {
-        $overlay.append(w(hull.name + ': ' + ((hull.timePlayed / total_time) * 100).toFixed(1) + '%'));
-        if (topHullTimePlayed < hull.timePlayed) {
-          topHullTimePlayed = hull.timePlayed;
-          topHull = hull.name;
-        }
-
+        addItemTime(hulls_time, hull);
         if (lightHulls.indexOf(hull.name) != -1) {
           lightHullsTimePlayed += hull.timePlayed;
         } else if (mediumHulls.indexOf(hull.name) != -1) {
@@ -204,6 +216,17 @@ function renderData(data) {
         } else if (heavyHulls.indexOf(hull.name) != -1) {
           heavyHullsTimePlayed += hull.timePlayed;
         }
+      }
+    }
+    hulls_time = new Map([...hulls_time.entries()].sort((a, b) => b[1] - a[1])); // Sort by time
+
+    $overlay.append(w('<hr>'));
+    $overlay.append(w('Игровое время на корпусах:'));
+    for (let [name, time] of hulls_time) {
+      $overlay.append(w(name + ': ' + ((time / total_time) * 100).toFixed(1) + '%'));
+      if (topHullTimePlayed < time) {
+        topHullTimePlayed = time;
+        topHull = name;
       }
     }
   }
