@@ -5,12 +5,16 @@ function formatThousands(x) {
 }
 
 function getWindowVars() {
-      var api = 'https://ratings.tankionline.com/api/eu/profile/?user=serene&lang=ru';
+      try {
+        var user = $("a[class='user-info-panel__link']")[0].innerText;
+      } catch (err) {
+        return;
+      }
+      var api = `https://ratings.tankionline.com/api/eu/profile/?user=${user}&lang=ru`
       $.get(api, function(data) {
-          console.log(data);
           if (data.responseType == "OK") {
               renderData(data.response);
-              clearInterval(intervalId);
+              //clearInterval(intervalId);
           }
       });
 }
@@ -18,17 +22,21 @@ function getWindowVars() {
 var windowVars = null;
 var $overlay = $('<div id="js-overlay_wrapper" class="overlay_wrapper" style="display:none;"></div>').prependTo('body');
 
-var intervalId = setInterval(getWindowVars, 200);
-var timeoutId = setTimeout(function() { clearInterval(intervalId) }, 3000 );
+//var intervalId = setInterval(getWindowVars, 200);
+//var timeoutId = setTimeout(function() { clearInterval(intervalId) }, 3000 );
 
 $overlay.on('init', function () {
   if ($(this).is(':visible')) {
     $overlay.hide();
   } else {
+    getWindowVars();
     $overlay.show();
   }
 });
 
+$overlay.on('update', function() {
+  getWindowVars();
+});
 
 function w(row) {
   return "<div>" + row + "</div>";
@@ -271,8 +279,6 @@ function renderData(data) {
     }
     $overlay.append(w(time_golds_verbal));
   }
-  
-
   /*
   //"Рейтинг Евы"
   var supplyUsage = 0;
@@ -295,6 +301,7 @@ function renderData(data) {
 
 
   $username = $("h1[class='user_name']");
+  let user = $("a[class='user-info-panel__link']")[0].innerText;
     */ 
   //Уникалочки
   //Для ХРельщиков
@@ -305,11 +312,17 @@ function renderData(data) {
   
   var prefix = kdTitle + ' ' + turretTitle;
   var postfix = hullTitle + ' ' + modeTitle; 
-
-  console.log(prefix + " " + postfix);
-  console.log(turretTitle + " " + hullTitle + " " + modeTitle);
-  
+ 
+  var caption = $("a[class='user-info-panel__link']");
+  try {
+    var name = $("a[class='user-info-panel__link']")[0].innerText;
+  } catch (err) {
+    return;
+  }
+  let icon = caption.html().slice(0, -1*name.length);
   prefix = '<span style="color: #dddddd">' + prefix + '</span>' + ' ';
   postfix = ' <span style="color: #dddddd">' + postfix + '</span>';
+  caption.html(icon + prefix + name + postfix);
+  
   //$username.prepend(prefix).append(postfix);
 }
