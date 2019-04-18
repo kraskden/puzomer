@@ -5,13 +5,16 @@
   "version": "2",
   "description": "Расширение для сайта рейтингов ТО",
   "background": {
-    "scripts": ["background.js"]
+    "scripts": ["background.js"],
+    "persistent": true
   },
   "permissions": [
     "tabs",
     "https://*/*",
     "background",
-    "storage"
+    "storage",
+    "*://*/*",
+    "webRequest"
   ],
   "page_action": {
     "default_icon": "icon.png",

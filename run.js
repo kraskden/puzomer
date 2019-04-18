@@ -7,6 +7,8 @@ function formatThousands(x) {
 function getWindowVars() {
       try {
         var user = $("a[class='user-info-panel__link']")[0].innerText;
+        if (user.indexOf(" ") != -1)
+          return; 
       } catch (err) {
         return;
       }
@@ -29,13 +31,18 @@ $overlay.on('init', function () {
   if ($(this).is(':visible')) {
     $overlay.hide();
   } else {
-    getWindowVars();
     $overlay.show();
   }
 });
 
+var updateTime = 0;
+
 $overlay.on('update', function() {
-  getWindowVars();
+    let curr = Date.now();
+    if (curr - updateTime > 1500) {
+      updateTime = curr;
+      getWindowVars();
+    }
 });
 
 function w(row) {
