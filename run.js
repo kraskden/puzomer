@@ -18,10 +18,15 @@ function makeWaitFun()
 
 setInterval(makeWaitFun(), 200);
 
+function getUser()
+{
+  var re = /user\/(.+)\/?/;
+  return re.exec(window.location.href)[1];
+}
+
+
 function getWindowVars() {
-      // TODO: use url parse instead of this shit
-      var re = /user\/(\w+)\/?/;
-      var user = re.exec(window.location.href)[1];
+      var user = getUser();
       var api = `https://ratings.tankionline.com/api/eu/profile/?user=${user}&lang=ru`
       $.get(api, function(data) {
           if (data.responseType == "OK") {
@@ -302,30 +307,7 @@ function renderData(data) {
     }
     $overlay.append(w(time_golds_verbal));
   }
-  /*
-  //"Рейтинг Евы"
-  var supplyUsage = 0;
-  for (var i = 0; i < data.suppliesUsage.length; i++) {
-    supplyUsage += data.suppliesUsage[i].usages;
-  }
   
-  var evaScoreValue = supplyUsage / data.rank + kills_deaths * 1000 + toHours(total_time) + data.earnedCrystals / 10000;
-  evaScoreValue = formatThousands(Math.round(evaScoreValue));
-  //уникалочки по никам
-  switch (data.name) {
-	  case "Serene":
-	  evaScoreValue = '<span style="color:#c8a2c8">over 9k</span>';
-	  break;
-  }
-  
-  var evaScore = '<tr><td data-loc="text_pos_dmt" class="first-column">Рейтинг <a href="http://ru.tankiforum.com/profile/625-eva/">Евы</a></td><td id="dmt_pos">—</td><td id="dmt_value">' + evaScoreValue + '</td><td id="dmt_prev">—</td></tr>';
-  $(".ratings_table tr:last").after(evaScore);
-  
-
-
-  $username = $("h1[class='user_name']");
-  let user = $("a[class='user-info-panel__link']")[0].innerText;
-    */ 
   //Уникалочки
   //Для ХРельщиков
   if (topHull == "hornet" && topHullTimePlayed / total_time > 0.5 && topTurret == "Рельса") {
@@ -337,8 +319,7 @@ function renderData(data) {
   var postfix = hullTitle + ' ' + modeTitle; 
  
   var caption = $("a[class='user-info-panel__link']");
-  var re = /user\/(\w+)\/?/;
-  var name = re.exec(window.location.href)[1];
+  var name = getUser();
       
   let icon = caption.html().slice(0, -1*name.length);
   prefix = '<span style="color: #dddddd">' + prefix + '</span>' + ' ';
