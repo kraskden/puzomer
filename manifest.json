@@ -2,7 +2,7 @@
 "update_url": "https://clients2.google.com/service/update2/crx",
 
   "name": "Пузомер",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "Расширение для сайта рейтингов ТО",
   "background": {
     "scripts": ["background.js"]
