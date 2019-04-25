@@ -20,7 +20,7 @@ setInterval(makeWaitFun(), 200);
 
 function getUser()
 {
-  var re = /user\/(.+)\/?/;
+  var re = /user\/([^\/]+)\/?/;
   return re.exec(window.location.href)[1];
 }
 
